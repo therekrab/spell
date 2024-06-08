@@ -1,4 +1,5 @@
 use std::{
+    cmp::min_by,
     fs::File,
     io::{BufRead, BufReader},
     time,
@@ -45,7 +46,8 @@ fn load_dictionary() -> Vec<String> {
     dictionary
 }
 
-fn edit_distance(word1: &str, word2: &str) -> usize {
+// this is an optimized agorithm. do not use for normal purposes, unless your limit is ridiculously large. if the dist(a, b) == limit, it will return none.
+fn edit_distance(word1: &str, word2: &str, limit: usize) -> usize {
     if word1 == word2 {
         return 0;
     }
@@ -65,11 +67,13 @@ fn edit_distance(word1: &str, word2: &str) -> usize {
     let chars1: Vec<char> = word1.chars().collect();
     let chars2: Vec<char> = word2.chars().collect();
     for i in 0..=n {
+        let mut smallest_seen = n + m; // we just need a big value, this shouldn't show up again.
         for j in 0..=m {
             // check for edge cases: j == 0 means that we are in the first column, so we will just return i
             // i == 0 means that we are in the first row, so we will just return j
             if i * j == 0 {
                 grid[i][j] = i + j;
+                smallest_seen = min_by(smallest_seen, i + j, |a: &usize, b: &usize| a.cmp(b));
                 continue;
             }
 
@@ -88,11 +92,11 @@ fn edit_distance(word1: &str, word2: &str) -> usize {
                 min_value = swap_score;
             }
 
-            if min_value > n && min_value > m {
-                return min_value;
-            }
-
             grid[i][j] = min_value;
+            smallest_seen = min_by(min_value, smallest_seen, |a: &usize, b: &usize| a.cmp(b));
+        }
+        if smallest_seen >= limit {
+            return limit;
         }
     }
 
@@ -100,16 +104,17 @@ fn edit_distance(word1: &str, word2: &str) -> usize {
 }
 
 fn spellcheck(word: &str, dictionary: &Vec<String>) -> String {
-    let mut closest_match: String = word.to_owned();
+    let oword = word.to_owned();
+    if dictionary.contains(&oword) {
+        return oword;
+    }
+    let mut closest_match: String = oword;
     let mut closest_distance = word.len();
     for possible_word in dictionary {
-        if word == possible_word {
-            return word.to_owned();
-        }
-        let distance = edit_distance(word, possible_word);
+        let distance = edit_distance(word, possible_word, closest_distance);
         if distance < closest_distance {
-            closest_match = possible_word.to_owned();
             closest_distance = distance;
+            closest_match = possible_word.to_owned();
         }
     }
 
