@@ -112,6 +112,10 @@ fn spellcheck(word: &str, dictionary: &Vec<String>) -> String {
     let mut closest_distance = word.len();
     for possible_word in dictionary {
         let distance = edit_distance(word, possible_word, closest_distance);
+        if distance == 1 {
+            // we have checked to see if it is in the dictionary, so we know 1 is the best distance possible
+            return possible_word.to_owned();
+        }
         if distance < closest_distance {
             closest_distance = distance;
             closest_match = possible_word.to_owned();
