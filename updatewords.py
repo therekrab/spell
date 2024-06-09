@@ -8,7 +8,8 @@ with open("words.json", "r") as i:
 # just to make sure that any custom words we added aren't deleted
 with open("words.txt", "r") as i:
     for line in i.readlines():
-        d.add(line.strip().lower())
+        l = line.strip().lower()
+        d.add(l)
 
 with open("words.txt", "w") as o:
     for word in sorted(d):
