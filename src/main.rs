@@ -6,15 +6,16 @@ use std::{
 };
 
 fn main() {
-    let start_time = time::Instant::now();
+    let mut sentence: String = String::new();
+    std::io::stdin()
+        .read_line(&mut sentence)
+        .expect("failed to read from stdin");
 
-    let words = vec![
-        "whse", "is", "it", "canyways", "grpe", "falow", "zbra", "shinne",
-    ];
+    let start_time = time::Instant::now();
 
     let dictionary = load_dictionary();
 
-    for word in words {
+    for word in sentence.trim().split_whitespace() {
         let correction: String = spellcheck(&word, &dictionary);
         print!("{correction} ");
     }
@@ -23,7 +24,7 @@ fn main() {
     let end_time = time::Instant::now();
 
     let duration = end_time - start_time;
-    println!("{duration:#?}");
+    println!("elapsed: {duration:#?}");
 }
 
 fn load_dictionary() -> Vec<String> {
