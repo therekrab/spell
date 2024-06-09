@@ -8,7 +8,9 @@ use std::{
 fn main() {
     let start_time = time::Instant::now();
 
-    let words = vec!["whse", "is", "it", "canyways", "grpe", "falow", "zebra"];
+    let words = vec![
+        "whse", "is", "it", "canyways", "grpe", "falow", "zbra", "shinne",
+    ];
 
     let dictionary = load_dictionary();
 
