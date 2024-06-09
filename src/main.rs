@@ -6,25 +6,30 @@ use std::{
 };
 
 fn main() {
-    let mut sentence: String = String::new();
-    std::io::stdin()
-        .read_line(&mut sentence)
-        .expect("failed to read from stdin");
-
     let dictionary = load_dictionary();
+    println!("loaded dictionary, start typing:");
 
-    let start_time = time::Instant::now();
+    loop {
+        let mut sentence: String = String::new();
+        std::io::stdin()
+            .read_line(&mut sentence)
+            .expect("failed to read from stdin");
 
-    for word in sentence.trim().split_whitespace() {
-        let correction: String = spellcheck(&word, &dictionary);
-        print!("{correction} ");
+        let start_time = time::Instant::now();
+
+        for word in sentence.trim().split_whitespace() {
+            let correction: String = spellcheck(&word, &dictionary);
+            print!("{correction} ");
+        }
+        println!("");
+
+        let end_time = time::Instant::now();
+
+        let duration = end_time - start_time;
+        println!("elapsed: {duration:#?}");
+
+    
     }
-    println!("");
-
-    let end_time = time::Instant::now();
-
-    let duration = end_time - start_time;
-    println!("elapsed: {duration:#?}");
 }
 
 fn load_dictionary() -> Vec<String> {
