@@ -105,24 +105,73 @@ fn edit_distance(word1: &str, word2: &str, limit: usize) -> usize {
     grid[n][m]
 }
 
-fn spellcheck(word: &str, dictionary: &Vec<String>) -> String {
-    let oword = word.to_owned();
-    if dictionary.contains(&oword) {
-        return oword;
-    }
-    let mut closest_match: String = oword;
-    let mut closest_distance = word.len();
-    for possible_word in dictionary {
-        let distance = edit_distance(word, possible_word, closest_distance);
-        if distance == 1 {
-            // we have checked to see if it is in the dictionary, so we know 1 is the best distance possible
-            return possible_word.to_owned();
+fn search(dictionary: &Vec<String>, word: &String) -> usize {
+    let mut l: usize = 0;
+    let mut r: usize = dictionary.len() - 1;
+
+    while l <= r {
+        let m: usize = (l + r) / 2;
+        let dword = &dictionary[m];
+        if dword == word {
+            return m;
         }
-        if distance < closest_distance {
-            closest_distance = distance;
-            closest_match = possible_word.to_owned();
+        if dword < word {
+            l = m + 1;
+        }
+        if dword > word {
+            r = m - 1;
         }
     }
 
-    closest_match
+    l
+}
+
+fn spellcheck(word: &str, dictionary: &Vec<String>) -> String {
+    let oword = word.to_owned();
+    let len = dictionary.len();
+
+    let i = search(dictionary, &oword);
+
+    if dictionary[i] == word {
+        return oword;
+    }
+
+    let mut l = i;
+    let mut r = i;
+
+    let mut closest_word = oword;
+    let mut closest_distance = word.len();
+
+    while l > 0 || r < len {
+        if l > 0 {
+            // decrement, then check l
+            // this means that once l is 0, we will already have checked dict[0], so we can stop without worrying about overflow.
+            l -= 1;
+            let candidate = dictionary[l].to_owned();
+            let dist = edit_distance(word, &candidate, closest_distance);
+            if dist == 1 {
+                return candidate;
+            }
+            if dist < closest_distance {
+                closest_distance = dist;
+                closest_word = candidate;
+            }
+        }
+
+        if r < len {
+            // check r, then increment
+            let candidate = dictionary[r].to_owned();
+            let dist = edit_distance(word, &candidate, closest_distance);
+            if dist == 1 {
+                return candidate;
+            }
+            if dist < closest_distance {
+                closest_distance = dist;
+                closest_word = candidate;
+            }
+            r += 1;
+        }
+    }
+
+    closest_word
 }
