@@ -11,9 +11,9 @@ fn main() {
         .read_line(&mut sentence)
         .expect("failed to read from stdin");
 
-    let start_time = time::Instant::now();
-
     let dictionary = load_dictionary();
+
+    let start_time = time::Instant::now();
 
     for word in sentence.trim().split_whitespace() {
         let correction: String = spellcheck(&word, &dictionary);
