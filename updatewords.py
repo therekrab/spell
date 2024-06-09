@@ -3,14 +3,15 @@ import json
 d = None
 
 with open("words.json", "r") as i:
-    d = set(json.load(i)["words"])
+    d = set(map(lambda s: s.lower(), json.load(i)["words"]))
 
+# just to make sure that any custom words we added aren't deleted
 with open("words.txt", "r") as i:
     for line in i.readlines():
-        d.add(line.strip())
+        d.add(line.strip().lower())
 
 with open("words.txt", "w") as o:
-    for word in d:
+    for word in sorted(d):
         o.write(f"{word}\n")
 
 print(f"updated all words. current word count: {len(d)}")
