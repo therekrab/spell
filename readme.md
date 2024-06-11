@@ -38,7 +38,7 @@ __Optimizaion #4__: Sort the dictionary in alphabetical order (no real improveme
 
 __Optimization #5__: Use Optimization #5 to binary search through the words to get an idea of where the checked word would be to get an index `i`. If the dictionary at `i` is the input word, then we can stop now. This is better than a search over every element in the list, b/c it's time complexity is `O(log n)` rather than `O(n)`.
 
-__Optimization #6__: Once `i` is found, create a left and right pointer that will start at i, then work out from there to search the closest words first. This means that if the word starts with the same letter(s) as the correctly spelled word, the correcly spelled word will be reached quite quickly.
+__Optimization #6__: Once `i` is found, create a left and right pointer that will start at `i`, then work out from there to search the closest words first. This means that if the word starts with the same letter(s) as the correctly spelled word, the correcly spelled word will be reached quite quickly.
 
 ### The result of optimizaions:
 The combination of all of the above optimizations is quite noticable, taking the algorithm from a time of multiple seconds to a time of under 10 milliseconds, including loading the dictionary. Looking at the time of just the spell checker, we see times of under a millisecond. These results are quite astonishing, and they show the power of optimizations.
