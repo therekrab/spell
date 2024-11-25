@@ -3,7 +3,7 @@ A really fast spellchecker built in Rust.
 
 ## A Quick Note
 This project runs of a ~5K word dictionary, so it is important to consider that it is not meant for real world use.
-However, more would could be added easily wihtout affecting program runtime (too much).
+However, more would could be added easily without affecting program runtime (too much).
 
 ## How it works
 Under the hood, this is just a lot of optimizations on the
