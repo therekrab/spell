@@ -27,8 +27,6 @@ fn main() {
 
         let duration = end_time - start_time;
         println!("elapsed: {duration:#?}");
-
-    
     }
 }
 
@@ -61,6 +59,9 @@ fn edit_distance(word1: &str, word2: &str, limit: usize) -> usize {
     }
     let n: usize = word1.len();
     let m: usize = word2.len();
+    if (n > m && n - m >= limit) || (m > n && m - n >= limit) {
+        return limit;
+    }
     if n * m == 0 {
         return n + m;
     }
