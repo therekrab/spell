@@ -2,8 +2,6 @@ use std::time;
 
 fn main() {
     let dictionary = spell::load_dictionary();
-    println!("loaded dictionary, start typing:");
-
     loop {
         let mut sentence: String = String::new();
         std::io::stdin()
@@ -12,11 +10,8 @@ fn main() {
 
         let start_time = time::Instant::now();
 
-        for word in sentence.trim().split_whitespace() {
-            let correction: String = spell::spellcheck(&word, &dictionary);
-            print!("{correction} ");
-        }
-        println!(""); // final \n
+        let iter = sentence.trim().split_whitespace();
+        spell::check_iter(iter, &dictionary);
 
         let end_time = time::Instant::now();
 
@@ -24,5 +19,3 @@ fn main() {
         println!("elapsed: {duration:#?}");
     }
 }
-
-
