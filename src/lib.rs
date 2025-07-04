@@ -1,9 +1,11 @@
 use std::{
+    env,
     fs::File,
     io::{BufRead, BufReader},
 };
 
 const MAX_DIFFERENCE: usize = 4;
+const WARN_NON_ASCII: bool = false;
 
 pub enum Correction<'a> {
     Correct,
@@ -56,7 +58,7 @@ fn edit_distance(word1: &str, word2: &str, limit: Option<usize>) -> Option<usize
         for j in 1..=n {
             let mut best = row[j - 1].min(grid[i - 1][j]) + 1;
             let swap = grid[i - 1][j - 1];
-            if swap + 1 <= best {
+            if swap < best {
                 // We have to check cost now
                 let cost = if chars1[j - 1] == chars2[i - 1] { 0 } else { 1 };
                 best = swap + cost;
@@ -73,8 +75,8 @@ fn edit_distance(word1: &str, word2: &str, limit: Option<usize>) -> Option<usize
     Some(grid[m][n])
 }
 
-pub fn spellcheck<'a>(word: String, dictionary: &'a Vec<String>) -> Correction<'a> {
-    let location = dictionary.binary_search(&word);
+pub fn spellcheck<'a>(word: &str, dictionary: &'a [String]) -> Correction<'a> {
+    let location = dictionary.binary_search(&word.to_string());
     // If the word is in the dictionary, just return it.
     if location.is_ok() {
         return Correction::Correct; // no change
@@ -98,7 +100,7 @@ pub fn spellcheck<'a>(word: String, dictionary: &'a Vec<String>) -> Correction<'
 
         if r_ok {
             r_word = &dictionary[r];
-            if let Some(dist) = edit_distance(&word, r_word, min_value) {
+            if let Some(dist) = edit_distance(word, r_word, min_value) {
                 if min_value.is_none() || dist < min_value.unwrap() {
                     min_value = Some(dist);
                     index = r;
@@ -110,7 +112,7 @@ pub fn spellcheck<'a>(word: String, dictionary: &'a Vec<String>) -> Correction<'
 
         if l_ok {
             l_word = &dictionary[l];
-            if let Some(dist) = edit_distance(&word, l_word, min_value) {
+            if let Some(dist) = edit_distance(word, l_word, min_value) {
                 if min_value.is_none() || dist < min_value.unwrap() {
                     min_value = Some(dist);
                     index = l;
@@ -134,12 +136,14 @@ pub fn spellcheck<'a>(word: String, dictionary: &'a Vec<String>) -> Correction<'
 pub fn load_dictionary() -> Vec<String> {
     let mut dictionary: Vec<String> = Vec::new();
 
-    let f: File = match File::open("words.txt") {
-        Ok(file) => file,
-        Err(e) => panic!("Failed to open dictionary: {e:?}"),
-    };
+    let f: File =
+        match File::open(env::var("DICTIONARY").unwrap_or(String::from("/usr/share/dict/words"))) {
+            Ok(file) => file,
+            Err(e) => panic!("Failed to open dictionary: {e:?}"),
+        };
 
     let mut reader: BufReader<File> = BufReader::new(f);
+    let mut non_ascii = 0;
     loop {
         let mut line: String = String::new();
         let res = reader.read_line(&mut line);
@@ -147,25 +151,18 @@ pub fn load_dictionary() -> Vec<String> {
             // we are done for one  reason or another.
             break;
         }
-        let l = line.trim().to_owned();
-        dictionary.push(l);
+        let l = line.trim().to_lowercase();
+        if l.is_ascii() {
+            dictionary.push(l);
+        } else {
+            non_ascii += 1;
+        }
     }
+    if WARN_NON_ASCII && non_ascii > 0 {
+        eprintln!("[ warning ] Found {non_ascii} non-ascii word(s) in dictionary, skipped.");
+    }
+    dictionary.sort_unstable();
     dictionary
-}
-
-pub fn check_iter<T: Iterator>(iter: T, dictionary: &Vec<String>)
-where
-    <T as Iterator>::Item: std::fmt::Display,
-{
-    for word in iter {
-        let correction = spellcheck(word.to_string(), &dictionary);
-        if let Correction::Recommendation(correct) = correction {
-            println!("{word} => {correct}");
-        }
-        if let Correction::Unknown = correction {
-            println!("{word} => ???");
-        }
-    }
 }
 
 #[cfg(test)]

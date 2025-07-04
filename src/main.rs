@@ -1,21 +1,11 @@
-use std::time;
+use std::env;
+
+use file_io::Config;
+
+mod tokens;
+mod file_io;
 
 fn main() {
-    let dictionary = spell::load_dictionary();
-    loop {
-        let mut sentence: String = String::new();
-        std::io::stdin()
-            .read_line(&mut sentence)
-            .expect("failed to read from stdin");
-
-        let start_time = time::Instant::now();
-
-        let iter = sentence.trim().split_whitespace();
-        spell::check_iter(iter, &dictionary);
-
-        let end_time = time::Instant::now();
-
-        let duration = end_time - start_time;
-        println!("elapsed: {duration:#?}");
-    }
+    let config = Config::build(env::args());
+    file_io::check_file(&config);
 }
