@@ -34,6 +34,6 @@ This is because it's more likely to type `misatke` than `istake`, due to the
 nature of how we type.
 
 This allows the algorithm to quickly find possible matches and display them
-early - for most schearios. If you type `azebra` instead of `zebra`, the
+early - for most scenarios. If you type `azebra` instead of `zebra`, the
 algorithm will take noticeably more time. But I don't think that's as likely,
 so it's worth it.
