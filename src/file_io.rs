@@ -10,7 +10,7 @@ pub fn check_file(config: &Config) {
     if let Err(e) = file.read_to_string(&mut contents) {
         panic!("Couldn't read from {}: {e}", config.file_path);
     }
-    let dictionary = spell::load_dictionary();
+    let dictionary = rspell::load_dictionary();
 
     for token in tokens::tokenize(&contents) {
         if let Some(message) = token.format(&dictionary) {

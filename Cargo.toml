@@ -1,5 +1,5 @@
 [package]
-name = "spell"
+name = "rspell"
 version = "0.1.0"
 edition = "2021"
 

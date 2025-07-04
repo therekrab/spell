@@ -1,4 +1,4 @@
-use spell::{spellcheck, Correction};
+use rspell::{spellcheck, Correction};
 
 pub struct Token {
     literal: String,
