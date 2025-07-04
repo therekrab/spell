@@ -125,12 +125,12 @@ mod tests {
 
     #[test]
     fn test_tokenize() {
-        let results = tokenize("hello, my name: is Bob.");
+        let results = tokenize("hello, MY name: is Bob.");
         assert_eq!(results[0].literal, "hello");
-        assert_eq!(results[1].literal, "my");
+        assert_eq!(results[1].literal, "MY");
         assert_eq!(results[2].literal, "name");
         assert_eq!(results[3].literal, "is");
-        assert_eq!(results[4].literal, "bob");
+        assert_eq!(results[4].literal, "Bob");
     }
 
     #[test]
