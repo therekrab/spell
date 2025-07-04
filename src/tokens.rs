@@ -74,7 +74,7 @@ impl Token {
                 Capitalization::from(&self.literal).apply(r)
             )),
             Correction::Unknown => Some(format!(
-                "line {}: {} (no match found)",
+                "line {}: {:?} (no match found)",
                 self.line + 1,
                 self.literal
             )),
@@ -98,7 +98,7 @@ fn tokenize_word(word: &str, line: usize) -> Vec<Token> {
         return Vec::new();
     }
     if !word.is_ascii() {
-        panic!("Found non-ASCII word: {word}. This app doesn't currently support non-ascii characters.");
+        rspell::report_error(&format!("Found non-ASCII word: {word}. This app doesn't currently support non-ascii characters."));
     }
     let mut result = Vec::new();
     // Pull characters until we reach an invalid character
