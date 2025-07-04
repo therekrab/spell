@@ -5,7 +5,6 @@ use std::{
 };
 
 const MAX_DIFFERENCE: usize = 4;
-const WARN_NON_ASCII: bool = false;
 
 pub enum Correction<'a> {
     Correct,
@@ -143,7 +142,6 @@ pub fn load_dictionary() -> Vec<String> {
         };
 
     let mut reader: BufReader<File> = BufReader::new(f);
-    let mut non_ascii = 0;
     loop {
         let mut line: String = String::new();
         let res = reader.read_line(&mut line);
@@ -154,12 +152,7 @@ pub fn load_dictionary() -> Vec<String> {
         let l = line.trim().to_lowercase();
         if l.is_ascii() {
             dictionary.push(l);
-        } else {
-            non_ascii += 1;
         }
-    }
-    if WARN_NON_ASCII && non_ascii > 0 {
-        eprintln!("[ warning ] Found {non_ascii} non-ascii word(s) in dictionary, skipped.");
     }
     dictionary.sort_unstable();
     dictionary
